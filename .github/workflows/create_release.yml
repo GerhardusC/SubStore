@@ -1,0 +1,66 @@
+name: Create Release
+run-name: ${{ github.actor }} is creating a release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build
+      run: cargo build --verbose
+    - name: Run tests
+      run: cargo test --verbose
+    - name: Upload binary
+      uses: actions/upload-artifact@v4
+      with: 
+        name: sub-store
+        path: ./target/release/subs_store
+
+  Create-Release:
+    needs: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: todo
+          draft: false
+          prerelease: false
+
+      - name: Retrieve release assets
+        uses: actions/download-artifact@v4
+        with:
+          name: sub-store
+          path: ./target/release/sub_store
+
+      - name: Zip up release
+        run: zip release.zip ./target/release/sub_store 
+
+      - name: Upload release
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets. GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./release.zip
+          asset_name: release.zip
+          asset_content_type: application/zip
+
