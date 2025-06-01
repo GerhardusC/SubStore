@@ -24,7 +24,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with: 
         name: sub-store
-        path: ./target/release/subs_store
+        path: /home/runner/work/SubStore/SubStore
 
   Create-Release:
     needs: Build
@@ -37,10 +37,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: sub-store
-          path: ./target/release/sub_store
+          path: /home/runner/work/SubStore/SubStore
+
+      - name: Check Output
+        run: ls -alh ./target/release
 
       - name: Zip up release
-        run: zip release.zip ./target/release/sub_store 
+        run: zip release.zip /home/runner/work/SubStore/SubStore 
 
 
       - name: Create Release
