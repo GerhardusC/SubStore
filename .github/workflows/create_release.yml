@@ -53,7 +53,7 @@ jobs:
         run: ls -alh ./target/release
 
       - name: Zip up release
-        run: zip release.zip ./target/release/sub_store
+        run: zip -j release.zip ./target/release/sub_store
 
 
       - name: Create Release
