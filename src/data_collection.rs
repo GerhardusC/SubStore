@@ -20,7 +20,7 @@ pub struct MosquittoMessage {
 impl MosquittoMessage {
     fn new(timestamp: u64, topic: String, value: String) -> MosquittoMessage {
         let parsed_val = if let Ok(float) = value.parse::<f32>() {
-            SensorValue::NUM(float)
+            SensorValue::NUM((float * 100.0).round() / 100.0)
         } else {
             SensorValue::STR(value)
         };
